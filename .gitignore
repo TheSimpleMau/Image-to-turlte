@@ -1,0 +1,7 @@
+__pycache__/
+venv/
+*.jpg
+*.jpeg
+*.png
+main-prueba.py
+.DS_Store
