@@ -9,13 +9,47 @@ pix = im.load()
 # print(im.size)  # Get the width and hight of the image for iterating over
 size = im.size
 
+if size[0] != size[1]:
+    if (size[0] or size[1]) >= 50:
+        if size[0] < size[1]:
+            im = im.resize(size[1],size[1])
+            size = im.size
+        else:
+            im = im.resize(size[0],size[0])
+            size = im.size
+    else:
+        if size[0] < size[1]:
+            im = im.resize(size[1]/5,size[1]/5)
+            size = im.size
+        else:
+            im = im.resize(size[0]/5,size[0]/5)
+            size = im.size
+
 # print(pix[10,10])  # Get the RGBA Value of the a pixel of an image
 cords_colors = []
 for x in range(0,size[0]):
     for y in range(0,size[1]):
         cords_colors.append(pix[y,x])
 frecuent_color = mode(cords_colors)
-print(frecuent_color)
+# print(frecuent_color)
+# print(set(cords_colors))
+similar_color = []
+for sc in range(1,101):
+    tone_r = [frecuent_color[0]+sc,frecuent_color[0]-sc]
+    for rr in tone_r:
+        for sc2 in range(1,101):
+            tone_g = [frecuent_color[1]+sc,frecuent_color[1]-sc2]
+            for gg in tone_g:
+                for sc3 in range(1,101):
+                    tone_b = [frecuent_color[2]+sc,frecuent_color[2]-sc3]
+                    for bb in tone_b:
+                        similar_color.append((rr,gg,bb))
+similar_color = list(set(similar_color))
+# print(similar_color)
+    # similar_color.append([frecuent_color[0],frecuent_color[1],tone_r_menor])
+    # similar_color.append([frecuent_color[0],frecuent_color[1],tone_M])
+
+
 colormode(255)
 
 # rectangle_colors = []
@@ -91,6 +125,13 @@ def rectangle_pixel(lista,indice):
 # stop = input()
 
 
+def point_maker(object,color,zoom):
+    object.pendown()
+    object.color(color)
+    object.dot(zoom)
+    object.penup()
+
+
 def square_maker(object,color,zoom):
     object.pendown()
     object.color(color)
@@ -129,39 +170,121 @@ turtle.penup()
 turtle.speed(10)
 pantalla = Screen()
 pantalla.bgcolor(frecuent_color) #frecuent_color
+pantalla.title("The painter turtle")
 # pantalla.screensize(size[0],size[1])
 # pantalla.setup(width=size[0]*(zoom*3),height=size[1]*(zoom*3))
-pantalla.title("Turtle ''The Painter'' ")
 # turtle.goto(-(size[0]*zoom),size[1]*zoom)
 turtle.goto(-(size[0]/2)*(zoom),(size[1]/2)*(zoom))
 
-xd = 0
 
-for kk in range(0,size[0]):
-    for aa in range(0,size[1]):
-        if xd < len(cords_colors):
-            if cords_colors[xd] != frecuent_color:
-                is_rectangle = rectangle_pixel(cords_colors,xd)
-                if is_rectangle == None:
-                    print('hola')
-                    square_maker(turtle,cords_colors[xd],zoom)
-                    turtle.forward(zoom)
-                    xd+=1
-                else:
-                    if is_rectangle[1] == 1:
-                        print('hola2')
-                        square_maker(turtle,cords_colors[xd],zoom)
-                        turtle.forward(zoom)
-                        xd+=1
-                    else:
-                        print('hola3')
-                        rectangle_maker(turtle,is_rectangle,zoom)
-                        turtle.forward(zoom)
-                        xd+=is_rectangle[1]
-            else:
-                print('hola4')
-                turtle.forward(zoom)
-                xd+=1
+# print(size[0]*zoom)
+xd = 0
+tiempos_renglones = []
+pixeles_hechos_per_renglon = []
+for i in range(0,size[0]):
+    pixel_hecho = 0
+    tiempo_renglon_inicio = time()
+    for j in range(0,size[1]):
+        if cords_colors[xd] in similar_color or cords_colors[xd] == frecuent_color:
+            turtle.forward(zoom)
+            xd += 1
+        else:
+            point_maker(turtle,cords_colors[xd],zoom)
+            turtle.forward(zoom)
+            xd += 1
+            pixel_hecho += 1
+    turtle.backward((size[0]*zoom))
+    turtle.right(90)
+    turtle.forward(zoom)
+    turtle.left(90)
+    tiempo_renglon_fin = time()
+    tiempo_renglon = round(tiempo_renglon_fin-tiempo_renglon_inicio,2)
+    tiempos_renglones.append(tiempo_renglon)
+    pixeles_hechos_per_renglon.append(pixel_hecho)
+    print(tiempo_renglon)
+
+
+################################################
+######FUNICION QUE FUNCIONA MAS O MENOS XD######
+################################################
+# xd = 0
+
+# print(size[0])
+# tamano_y = 0
+# print(frecuent_color)
+# while tamano_y < size[1]:
+#     tamano_x = 0
+#     while tamano_x < size[0]:
+#         print(tamano_x)
+#         print(round(turtle.xcor(),0),round(turtle.ycor(),0))
+#         if xd < len(cords_colors):
+#             if cords_colors[xd] != frecuent_color:
+#                 is_rectangle = rectangle_pixel(cords_colors,xd)
+#                 print(is_rectangle)
+#                 if is_rectangle == None:
+#                     print('hola')
+#                     square_maker(turtle,cords_colors[xd],zoom)
+#                     turtle.forward(zoom)
+#                     xd+=1
+#                     tamano_x+=1
+#                 else:
+#                     if is_rectangle[1] == 1:
+#                         print('hola2')
+#                         square_maker(turtle,cords_colors[xd],zoom)
+#                         turtle.forward(zoom)
+#                         xd+=1
+#                         tamano_x+=1
+#                     else:
+#                         print('hola3')
+#                         rectangle_maker(turtle,is_rectangle,zoom)
+#                         turtle.forward(is_rectangle[1])
+#                         xd+=is_rectangle[1]
+#                         tamano_x+=is_rectangle[1]
+#             else:
+#                 print('hola4')
+#                 turtle.forward(zoom)
+#                 xd+=1
+#                 tamano_x+=1
+#     print('hola5')
+#     turtle.backward((size[0]*zoom)+zoom+3)
+#     turtle.right(90)
+#     turtle.forward(zoom)
+#     turtle.left(90)
+#     tamano_y+=1
+
+######################################################
+######FIN DE FUNCION QUE FUNCIONA MAS O MENOS XD######
+######################################################
+
+
+
+
+# for kk in range(0,size[0]):
+#     for aa in range(0,size[1]):
+#         print(turtle.xcor(),turtle.ycor())
+#         if xd < len(cords_colors):
+#             if cords_colors[xd] != frecuent_color:
+#                 is_rectangle = rectangle_pixel(cords_colors,xd)
+#                 if is_rectangle == None:
+#                     print('hola')
+#                     square_maker(turtle,cords_colors[xd],zoom)
+#                     turtle.forward(zoom)
+#                     xd+=1
+#                 else:
+#                     if is_rectangle[1] == 1:
+#                         print('hola2')
+#                         square_maker(turtle,cords_colors[xd],zoom)
+#                         turtle.forward(zoom)
+#                         xd+=1
+#                     else:
+#                         print('hola3')
+#                         rectangle_maker(turtle,is_rectangle,zoom)
+#                         turtle.forward(zoom)
+#                         xd+=is_rectangle[1]
+#             else:
+#                 print('hola4')
+#                 turtle.forward(zoom)
+#                 xd+=1
         # if cords_colors[xd]==frecuent_color:
         #     turtle.forward(zoom)
         #     xd+=1
@@ -197,35 +320,13 @@ for kk in range(0,size[0]):
         #         #     xd+=1
         #     else:
         #         square_maker(turtle,cords_colors[xd],zoom)
-    turtle.backward(size[0]*zoom)
-    turtle.right(90)
-    turtle.forward(zoom)
-    turtle.left(90)
-
-# index = 0
-# for x in range(0,size[0]):
-#     for y in range(0,size[1]):
-#         print(turtle.xcor(),turtle.ycor())
-#         if cords_colors[index] == frecuent_color:
-#             turtle.forward(zoom)
-
-
-# for pixel_color_x in range(0,size[0]):
-#     k=0
-#     for pixel_color_y in range(0,size[1]):
-#         square_maker(turtle,(255,255,0))
-#         turtle.forward(1)
-#         k+=1
-
-# square_maker(turtle,(255,255,0))
-
-
-
+    # turtle.backward(size[0]*zoom)
+    # turtle.right(90)
+    # turtle.forward(zoom)
+    # turtle.left(90)
 
 
 turtle.hideturtle() #Para ocultar a la torutga
-
-# print(cords_colors)
 
 
 # pix[10,10] = (255,255,0)  # Set the RGBA Value of the image (tuple)
