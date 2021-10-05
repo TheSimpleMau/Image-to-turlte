@@ -3,5 +3,6 @@ venv/
 *.jpg
 *.jpeg
 *.png
-main-prueba.py
+main-prueba-1.py
+main-prueba-2.py
 .DS_Store
