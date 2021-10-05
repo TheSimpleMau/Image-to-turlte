@@ -70,8 +70,6 @@ class ImageToTurtle:
         screen.tracer(False)
         screen.bgcolor(frecuent_color) 
         screen.title("The painter turtle")
-        # screen.setup(width=size[0]*(zoom*3),height=size[1]*(zoom*3))
-        # turtle.goto(-(size[0]*zoom),size[1]*zoom)
         turtle.goto(-(size[0]/2)*(self.zoom),(size[1]/2)*(self.zoom))
         pixel_to_draw = 0
         tiempos_renglones = []
@@ -96,11 +94,8 @@ class ImageToTurtle:
             tiempo_renglon = round(tiempo_renglon_fin-tiempo_renglon_inicio,2)
             tiempos_renglones.append(tiempo_renglon)
             pixeles_hechos_per_renglon.append(pixel_hecho)
-            print(tiempo_renglon)
-            # if len(tiempos_renglones)%10==0:
-            #     print(f'Numero de renglones renglones hechos: {len(tiempos_renglones)}')
-            #     promedio = (sum(tiempos_renglones)/60)*size[0]
-            #     print(f"Tiempor aproximado para acabar: {promedio} minutos")
+            if len(tiempos_renglones)%10==0:
+                print(f"Quedan {size[0]-len(tiempos_renglones)} por hacer :)")
             screen.update()
 
         screen.tracer(True)
