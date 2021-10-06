@@ -1,37 +1,49 @@
+#Importamos todos los modulos ncesesarios
 from turtle import Turtle,Screen, colormode
 from PIL import Image
 from statistics import mode
 from time import time
+import functools
 
+#Creamos una clase, la cual nos servirá para poder simplificar nuestro código
 class ImageToTurtle:
-
+    
+    #Establecemos el valor de colormode
     colormode(255)
 
+    #Funcion inicial para establecer atributos
     def __init__(self,nombre_imagen,zoom):
         self.nombre_imagen = nombre_imagen
         self.zoom = zoom
-    
 
+    #Funcion para hacer puntos
     def point_maker(self,object,color):
         object.pendown()
         object.color(color)
         object.dot(self.zoom)
         object.penup()
 
-
+    #Funcion para redimensionar una imagen
     def redimention_image(self):
         im = Image.open(self.nombre_imagen) 
         pix = im.load()
         size = im.size
-        print(size)
-        if size[0] != size[1] or size[0] > 100:
-            im = im.resize((100,100))
-            pix = im.load()
-            size = im.size
-        print(size)
+        if size[0] != size[1]:
+            if size[0] > 500:
+                im = im.resize((size[1],size[1]))
+                pix = im.load()
+                size = im.size
+            elif size[1] > 500:
+                im = im.resize((size[0],size[0]))
+                pix = im.load()
+                size = im.size
+            else:
+                im = im.resize((250,250))
+                pix = im.load()
+                size = im.size
         return pix,size
 
-
+    #Funcoin para obtener los colores de la imagen por su coordenadas y el color más frecuente
     def cords_colors(self,size,pix):
         cords_colors = []
         for x in range(0,size[0]):
@@ -40,16 +52,16 @@ class ImageToTurtle:
         frecuent_color = mode(cords_colors)
         return cords_colors,frecuent_color
 
-
+    #Funcion para obtener una lista de valores RGB con todos los valores similiares al color más frecuente
     def similar_color(self,frecuent_color):
         similar_color = []
-        for sc in range(1,101):
+        for sc in range(1,51):
             tone_r = [frecuent_color[0]+sc,frecuent_color[0]-sc]
             for rr in tone_r:
-                for sc2 in range(1,101):
+                for sc2 in range(1,51):
                     tone_g = [frecuent_color[1]+sc,frecuent_color[1]-sc2]
                     for gg in tone_g:
-                        for sc3 in range(1,101):
+                        for sc3 in range(1,51):
                             tone_b = [frecuent_color[2]+sc,frecuent_color[2]-sc3]
                             for bb in tone_b:
                                 similar_color.append((rr,gg,bb))
@@ -57,6 +69,9 @@ class ImageToTurtle:
         return similar_color
 
 
+    #Decorador que nos sirve para obtener la caché de una función y optimizar un poco nuestr función.
+    @functools.cached_property
+    #Funcion que nos realizar el plot de la imagen en pintura
     def image_maker(self):
         inicio = time()
         pix,size = self.redimention_image()
@@ -99,7 +114,7 @@ class ImageToTurtle:
             screen.update()
 
         screen.tracer(True)
-        turtle.hideturtle() #Para ocultar a la torutga
+        turtle.hideturtle()
 
         fin = time()
         print(f'Tiempo empleado para dibujar: {round((fin-inicio)/60,2)} minutos')
